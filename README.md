@@ -32,10 +32,9 @@ Every event is JSON:
 
 ```json
 {
-  "type": "email.received",
-  "version": "v1",
-  "timestamp": "2026-05-07T01:00:00.000Z",
-  "data": {}
+  "event": "email.received",
+  "version": "1.0",
+  "timestamp": "2026-05-07T01:00:00.000Z"
 }
 ```
 
@@ -54,7 +53,7 @@ const ws = new WebSocket("wss://bridge.cazonai.com/v1/subscribe", [
 
 ws.on("message", (payload) => {
   const event = JSON.parse(payload.toString());
-  console.log(event.type, event.data);
+  console.log(event.event, event);
 });
 ```
 

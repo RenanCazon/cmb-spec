@@ -66,19 +66,18 @@ All messages are JSON objects with this envelope:
 
 ```json
 {
-  "type": "event.name",
-  "version": "v1",
-  "timestamp": "2026-05-07T01:00:00.000Z",
-  "data": {}
+  "event": "event.name",
+  "version": "1.0",
+  "timestamp": "2026-05-07T01:00:00.000Z"
 }
 ```
 
 Fields:
 
-- `type`: event name
-- `version`: protocol version, currently `v1`
+- `event`: event name
+- `version`: payload version, currently `1.0`
 - `timestamp`: ISO 8601 UTC timestamp
-- `data`: event-specific object
+- event-specific fields may appear at the top level
 
 ## 6. Server Events
 
@@ -88,13 +87,13 @@ Sent immediately after a client is accepted.
 
 ```json
 {
-  "type": "session.welcome",
-  "version": "v1",
+  "event": "session.welcome",
+  "version": "1.0",
   "timestamp": "2026-05-07T01:00:00.000Z",
-  "data": {
-    "agent": "codex",
-    "scopes": ["email.received", "ai.presence"]
-  }
+  "session_id": "session-uuid",
+  "ai_id": "codex",
+  "ai_name": "Codex",
+  "scopes": ["email.received", "ai.presence"]
 }
 ```
 
@@ -104,15 +103,18 @@ Sent when a new message is observed by IMAP IDLE.
 
 ```json
 {
-  "type": "email.received",
-  "version": "v1",
+  "event": "email.received",
+  "version": "1.0",
   "timestamp": "2026-05-07T01:00:00.000Z",
-  "data": {
-    "uid": 48,
-    "mailbox": "INBOX",
-    "from": "sender@example.com",
-    "subject": "Subject",
-    "date": "2026-05-07T01:00:00.000Z"
+  "uid": 48,
+  "mailbox": "renan.cazon@cazonai.com",
+  "from": "Sender <sender@example.com>",
+  "subject": "Subject",
+  "preview": "",
+  "message_id": "provider-message-id",
+  "metadata": {
+    "has_attachments": false,
+    "flags": []
   }
 }
 ```
@@ -123,12 +125,9 @@ Sent after a client heartbeat.
 
 ```json
 {
-  "type": "heartbeat.ack",
-  "version": "v1",
-  "timestamp": "2026-05-07T01:00:00.000Z",
-  "data": {
-    "agent": "codex"
-  }
+  "event": "heartbeat.ack",
+  "version": "1.0",
+  "timestamp": "2026-05-07T01:00:00.000Z"
 }
 ```
 
@@ -138,13 +137,10 @@ Sent when a recoverable protocol error occurs.
 
 ```json
 {
-  "type": "error",
-  "version": "v1",
+  "event": "error",
+  "version": "1.0",
   "timestamp": "2026-05-07T01:00:00.000Z",
-  "data": {
-    "code": "invalid_message",
-    "message": "Invalid JSON"
-  }
+  "error": "invalid_json"
 }
 ```
 
@@ -154,30 +150,31 @@ Sent when a recoverable protocol error occurs.
 
 ```json
 {
-  "type": "heartbeat",
-  "data": {}
+  "event": "ai.heartbeat"
 }
 ```
 
 ### ai.online
 
+Server-emitted when an agent connects.
+
 ```json
 {
-  "type": "ai.online",
-  "data": {
-    "agent": "codex"
-  }
+  "event": "ai.online",
+  "ai_id": "codex",
+  "ai_name": "Codex"
 }
 ```
 
 ### ai.offline
 
+Server-emitted when an agent disconnects.
+
 ```json
 {
-  "type": "ai.offline",
-  "data": {
-    "agent": "codex"
-  }
+  "event": "ai.offline",
+  "ai_id": "codex",
+  "ai_name": "Codex"
 }
 ```
 
@@ -185,11 +182,8 @@ Sent when a recoverable protocol error occurs.
 
 ```json
 {
-  "type": "ai.reading_email",
-  "data": {
-    "agent": "codex",
-    "uid": 48
-  }
+  "event": "ai.reading_email",
+  "uid": 48
 }
 ```
 
@@ -197,11 +191,8 @@ Sent when a recoverable protocol error occurs.
 
 ```json
 {
-  "type": "ai.composing_email",
-  "data": {
-    "agent": "codex",
-    "to": "recipient@example.com"
-  }
+  "event": "ai.composing_email",
+  "to": "recipient@example.com"
 }
 ```
 
@@ -209,11 +200,8 @@ Sent when a recoverable protocol error occurs.
 
 ```json
 {
-  "type": "ai.sent_email",
-  "data": {
-    "agent": "codex",
-    "message_id": "provider-message-id"
-  }
+  "event": "ai.sent_email",
+  "message_id": "provider-message-id"
 }
 ```
 
@@ -221,11 +209,8 @@ Sent when a recoverable protocol error occurs.
 
 ```json
 {
-  "type": "ai.replied_email",
-  "data": {
-    "agent": "codex",
-    "uid": 48
-  }
+  "event": "ai.replied_email",
+  "uid": 48
 }
 ```
 
@@ -233,11 +218,8 @@ Sent when a recoverable protocol error occurs.
 
 ```json
 {
-  "type": "ai.archived_email",
-  "data": {
-    "agent": "codex",
-    "uid": 48
-  }
+  "event": "ai.archived_email",
+  "uid": 48
 }
 ```
 
@@ -245,10 +227,7 @@ Sent when a recoverable protocol error occurs.
 
 ```json
 {
-  "type": "ai.idle",
-  "data": {
-    "agent": "codex"
-  }
+  "event": "ai.idle"
 }
 ```
 
